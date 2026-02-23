@@ -1,0 +1,73 @@
+{% extends 'rentals/base.html' %}
+
+{% block content %}
+<h1>대여 플랫폼</h1>
+
+<!-- 대여 가능한 물품 -->
+<h2>대여 가능한 물품</h2>
+<div class="row">
+    {% for item in available_items %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="card-text text-muted">{{ item.description|truncatewords:10 }}</p>
+                    <p class="card-text">
+                        <span class="badge bg-primary">{{ item.category }}</span>
+                    </p>
+                    <p class="card-text">
+                        <strong>{{ item.daily_cost|floatformat:0 }}원 / 일</strong><br>
+                        <strong>{{ item.weekly_cost|floatformat:0 }}원 / 주</strong>
+                    </p>
+                    <a href="{% url 'item_detail' item.pk %}" class="btn btn-outline-primary btn-sm">상세 보기</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>현재 대여 가능한 물품이 없습니다.</p>
+    {% endfor %}
+</div>
+
+<!-- 내가 등록한 물품 -->
+{% if user.is_authenticated %}
+<h2>내가 등록한 물품</h2>
+
+<!-- 물품 등록하기 버튼 -->
+<div class="mb-4">
+    <a href="{% url 'add_item' %}" class="btn btn-success">물품 등록하기</a>
+</div>
+
+<div class="row">
+    {% for item_status in my_items_with_status %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <img src="{{ item_status.item.image.url }}" class="card-img-top" alt="{{ item_status.item.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item_status.item.title }}</h5>
+                    <p class="card-text text-muted">{{ item_status.item.description|truncatewords:10 }}</p>
+                    <p class="card-text">
+                        <span class="badge bg-primary">{{ item_status.item.category }}</span>
+                    </p>
+                    <p class="card-text">
+                        <strong>{{ item_status.item.daily_cost|floatformat:0 }}원 / 일</strong><br>
+                        <strong>{{ item_status.item.weekly_cost|floatformat:0 }}원 / 주</strong>
+                    </p>
+                    <p><strong>대여 상태:</strong>
+                        {% if item_status.is_rented %}
+                            <span class="text-danger">대여 중</span>
+                        {% else %}
+                            <span class="text-success">대여 가능</span>
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'item_detail' item_status.item.pk %}" class="btn btn-outline-primary btn-sm">상세 보기</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>현재 등록한 물품이 없습니다.</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

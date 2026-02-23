@@ -1,0 +1,11 @@
+{% extends 'rentals/base.html' %}
+
+{% block content %}
+<h1>물품 수정</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">수정</button>
+    <a href="{% url 'my_items' %}" class="btn btn-secondary">취소</a>
+</form>
+{% endblock %}

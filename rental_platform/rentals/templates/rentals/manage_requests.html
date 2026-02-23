@@ -1,0 +1,53 @@
+{% extends 'rentals/base.html' %}
+
+{% block content %}
+<h1>대여 요청 관리</h1>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>물품명</th>
+            <th>요청자</th>
+            <th>상태</th>
+            <th>대여 기간</th>
+            <th>작업</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in rental_requests %}
+            <tr>
+                <!-- 상품명 -->
+                <td>{{ request.item.title }}</td>
+                
+                <!-- 요청자 -->
+                <td>{{ request.requester.username }}</td>
+                
+                <!-- 상태 -->
+                <td>
+                    {% if request.status == 'Pending' %}
+                        대기 중
+                    {% elif request.status == 'Approved' %}
+                        승인됨
+                    {% elif request.status == 'Rejected' %}
+                        거절됨
+                    {% endif %}
+                </td>
+                
+                <!-- 대여 기간 -->
+                <td>
+                    
+                        {{ request.start_date|date:"Y-m-d" }} ~ {{ request.end_date|date:"Y-m-d" }}
+                   
+                </td>
+                
+                <!-- 작업 -->
+                <td>
+                    {% if request.status == 'Pending' %}
+                        <a href="{% url 'approve_request' request.pk %}" class="btn btn-success btn-sm">승인</a>
+                        <a href="{% url 'reject_request' request.pk %}" class="btn btn-danger btn-sm">거절</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

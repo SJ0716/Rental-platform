@@ -1,0 +1,21 @@
+{% extends 'rentals/base.html' %}
+
+{% block content %}
+<h1>내가 대여 중인 물품</h1>
+<div class="row">
+    {% for rental in rented_items %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <img src="{{ rental.item.image.url }}" class="card-img-top" alt="{{ rental.item.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ rental.item.title }}</h5>
+                    <p class="card-text">{{ rental.item.description|truncatewords:20 }}</p>
+                    <p><strong>대여 기간:</strong> {{ rental.start_date|date:"Y-m-d" }} ~ {{ rental.end_date|date:"Y-m-d" }}</p>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>현재 대여 중인 물품이 없습니다.</p>
+    {% endfor %}
+</div>
+{% endblock %}

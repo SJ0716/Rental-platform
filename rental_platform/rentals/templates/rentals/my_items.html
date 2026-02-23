@@ -1,0 +1,74 @@
+{% extends 'rentals/base.html' %}
+
+{% block content %}
+<h1>내 물품 관리</h1>
+
+<!-- 등록 중인 상품 -->
+<h2>등록 중인 물품</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>물품명</th>
+            <th>설명</th>
+            <th>작업</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in available_items %}
+            <tr>
+                <td>{{ item.title }}</td>
+                <td>{{ item.description|truncatewords:10 }}</td>
+                <td>
+                    <a href="{% url 'edit_item' item.pk %}" class="btn btn-warning btn-sm">수정</a>
+                    <form method="post" action="{% url 'delete_item' item.pk %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">현재 등록 중인 물품이 없습니다.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 승인 완료된 상품 -->
+<h2>승인 완료된 물품</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>물품명</th>
+            <th>빌려간 유저</th>
+            <th>대여 기간</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in approved_items %}
+            <tr>
+                <td>{{ item.title }}</td>
+                <td>
+                    {% for rental in item.rental_requests.all %}
+                        {% if rental.status == 'Approved' %}
+                            {{ rental.requester.username }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for rental in item.rental_requests.all %}
+                        {% if rental.status == 'Approved' %}
+                            {{ rental.start_date|date:"Y-m-d" }} ~ {{ rental.end_date|date:"Y-m-d" }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">현재 승인 완료된 물품이 없습니다.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

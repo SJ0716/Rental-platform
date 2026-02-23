@@ -1,0 +1,45 @@
+{% extends 'rentals/base.html' %}
+
+{% block content %}
+<div class="card">
+    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+    <div class="card-body">
+        <h5 class="card-title">{{ item.title }}</h5>
+        <p class="card-text">{{ item.description }}</p>
+        <p><strong>보증금:</strong> ₩{{ item.deposit }}</p>
+        <p><strong>대여 비용:</strong></p>
+        <ul>
+            <li><strong>일 단위:</strong> ₩{{ item.daily_cost }}</li>
+            <li><strong>주 단위:</strong> ₩{{ item.weekly_cost }}</li>
+        </ul>
+
+        <!-- 요청 버튼 처리 -->
+        {% if user.is_authenticated %}
+            {% if item.owner == user %}
+                <!-- 본인이 등록한 물품 -->
+                <p class="text-muted">내가 등록한 물품입니다. 요청할 수 없습니다.</p>
+                <a href="{% url 'edit_item' item.pk %}" class="btn btn-warning">물품 수정</a>
+                <h5 class="mt-4">대여 정보</h5>
+                {% if approved_rentals.exists %}
+                    <ul class="list-group">
+                        {% for rental in approved_rentals %}
+                            <li class="list-group-item">
+                                <strong>대여자:</strong> {{ rental.requester.username }}<br>
+                                <strong>대여 기간:</strong> {{ rental.start_date }} ~ {{ rental.end_date }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>현재 대여 중인 정보가 없습니다.</p>
+                {% endif %}
+            {% else %}
+                <!-- 다른 사용자가 등록한 물품 -->
+                <a href="{% url 'request_rental' item.pk %}" class="btn btn-success">대여 요청</a>
+            {% endif %}
+        {% else %}
+            <!-- 로그인하지 않은 사용자 -->
+            <a href="{% url 'login' %}" class="btn btn-primary">로그인 후 요청 가능</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
